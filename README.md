@@ -1,1 +1,1 @@
-# jacobi-paralle
+# jacobi-parallel
