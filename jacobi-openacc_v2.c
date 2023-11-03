@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h> 
+
+#include "lib/utils.h"
+
+// compile: nvc -acc -o jacobi_acc jacobi-openacc_v2.c 
+
+#define N 100
+#define MAX_ITER 500
+#define TOLERANCE 1e-5
+
+void jacobi(double *A, double *b, double *x, int size, int maxIter, double tolerance) {
+    int k = 0;
+    double error = tolerance + 1.0;
+
+    double *new_x = (double*)malloc(size * sizeof(double));
+
+    // Allocate and copy A, b, x and allocate new_x on the GPU
+    #pragma acc data copyin(A[0:size*size], b[0:size], x[0:size]) create(new_x[0:size])
+    {
+        while (k < maxIter && error > tolerance) {
+            #pragma acc parallel loop
+            for (int i = 0; i < size; i++) {
+                new_x[i] = b[i];
+                for (int j = 0; j < size; j++) {
+                    if (j != i) {
+                        new_x[i] -= A[i * size + j] * x[j];
+                    }
+                }
+                if (A[i * size + i] != 0) {
+                    new_x[i] /= A[i * size + i];
+                } else {
+                    new_x[i] = 0;
+                }
+            }
+
+            // Copy results back from the device to the host
+            #pragma acc update self(new_x[0:size])
+
+            error = 0.0;
+            for (int i = 0; i < size; i++) {
+                error += fabs(new_x[i] - x[i]);
+            }
+
+            for (int i = 0; i < size; i++) {
+                x[i] = new_x[i];
+            }
+
+            // copy x to the device
+            #pragma acc update device(x[0:size])
+            
+            k++;
+            
+        }
+    }
+
+    if (error < tolerance) {
+        printf("Converged: %d iterations\n", k);
+    } else {
+        printf("Not converged: %d iterations\n", k);
+    }
+
+    printf("Error = %g\n", error);
+
+    // Deallocate the GPU memory
+    #pragma acc exit data delete(A, b, x, new_x)
+}
+
+int main(int argc, char **argv) {
+    int size = N; // Size of the system of equations
+
+    if (argv[1] != NULL) {
+        size = atoi(argv[1]);
+    }
+
+    struct timespec start, end;
+
+    double  *A,  // diagonal matrix of coefficients 
+            *b,  // right vector
+            *x;  // initial guess
+    
+    A = (double *)malloc(size * size * sizeof(double));
+    b = (double *)malloc(size * sizeof(double));
+    x = (double *)calloc(size, size * sizeof(double));
+
+    generate_diagonal_dominant_matrix(A, size, 0, 1200);
+    generate_vector(b, size, 10, 200);
+
+    // print_matrix(A, size, size);
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+
+    jacobi(A, b, x, size, MAX_ITER, TOLERANCE);
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+
+    double delta_ms = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_nsec - start.tv_nsec) / 1000000;
+
+    //  Print the solution
+    // printf("Solution:\n");
+    // for (int i = 0; i < size; i++) {
+    //     printf("x[%d] = %.6f\n", i, x[i]);
+    // }
+
+    printf("Time elapsed = %g ms\n", delta_ms);
+
+    free(A);
+    free(b);
+    free(x);
+
+    return 0;
+}
+
+// Analyse:
+
+// perf record ./jacobi_acc
+// perf report'
+
+// sudo perf stat ./jacobi_acc
