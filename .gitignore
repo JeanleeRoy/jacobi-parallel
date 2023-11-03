@@ -2,4 +2,6 @@ jacobi
 jacobi_acc
 jacobi_cuda
 
+gpu_info
+
 profiling

@@ -1,0 +1,6 @@
+Device: NVIDIA T1200 Laptop GPU
+Max threads per block: 1024
+Max block size: 1024 x 1024 x 64
+Max grid size: 2147483647 x 65535 x 65535
+Shared memory per block: 48 KB
+Total GPU memory:  4 GB
