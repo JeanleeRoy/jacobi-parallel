@@ -8,3 +8,6 @@ profiling
 
 *.o
 *.out
+*.mod
+
+.vscode
