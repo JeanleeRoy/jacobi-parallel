@@ -5,3 +5,6 @@ jacobi_cuda
 gpu_info
 
 profiling
+
+*.o
+*.out
