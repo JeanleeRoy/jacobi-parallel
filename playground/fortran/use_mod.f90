@@ -5,13 +5,13 @@
 ! gfortran use_mod.f90 print_mod.o
 
 program use_mod
-  use print_mod
-  implicit none
+    use print_mod
+    implicit none
 
-  real :: mat(10, 5)
+    real :: mat(10, 5)
 
-  mat(:,:) = num_value
+    mat(:,:) = num_value
 
-  call print_matrix(mat)
+    call print_matrix(mat)
 
 end program use_mod

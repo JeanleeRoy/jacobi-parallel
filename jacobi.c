@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
+
 #include "lib/utils.h"
 
 // Compile: gcc -g -o jacobi jacobi.c
@@ -12,9 +13,9 @@
 void jacobi(double *A, double *b, double *x, int size, double tolerance, int maxIter) {
     int i, j, k = 0;
     double error = tolerance + 1.0;
-    
+
     double *new_x = (double *)calloc(size, size * sizeof(double));
-    
+
     while (k < maxIter && error > tolerance) {
         for (i = 0; i < size; i++) {
             new_x[i] = b[i];
@@ -49,22 +50,23 @@ void jacobi(double *A, double *b, double *x, int size, double tolerance, int max
     } else {
         printf("Did not converge after %d iterations\n", maxIter);
     }
+
     printf("Error = %g\n", error);
-    
+
     free(new_x);
 }
 
 int main(int argc, char **argv) {
-    int size = N; // Size of the system of equations
+    int size = N;  // Size of the system of equations
 
     if (argv[1] != NULL) {
         size = atoi(argv[1]);
     }
 
-    double  *A, // diagonal matrix of coefficients 
-            *b, // right vector
-            *x; // Initial guess
-    
+    double *A,  // diagonal matrix of coefficients
+        *b,     // right vector
+        *x;     // Initial guess
+
     A = (double *)malloc(size * size * sizeof(double));
     b = (double *)malloc(size * sizeof(double));
     x = (double *)malloc(size * sizeof(double));
@@ -97,6 +99,6 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-    // double A[N][N] = {{5, 1, 1}, {1, 6, 2}, {2, 3, 7}}; // Coefficient 
-    // double b[N] = {10, 15, 20}; // right vector
-    // double x[N] = {0}; // Initial guess
+// double A[N][N] = {{5, 1, 1}, {1, 6, 2}, {2, 3, 7}}; // Coefficient
+// double b[N] = {10, 15, 20}; // right vector
+// double x[N] = {0}; // Initial guess

@@ -13,7 +13,7 @@ void generate_diagonal_matrix(double *matrix, int size, int min, int max) {
 }
 
 void generate_diagonal_dominant_matrix(double *matrix, int size, int min, int max) {
-    srand(time(NULL)); // random seed
+    srand(time(NULL));  // random seed
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -46,7 +46,7 @@ void generate_vector(double *matrix, int size, int min, int max) {
     }
 }
 
-void print_matrix(double* A, int n, int m) {
+void print_matrix(double *A, int n, int m) {
     for (int i = 0; i < n; i++) {
         printf("[");
         for (int j = 0; j < m; j++) {
@@ -56,7 +56,7 @@ void print_matrix(double* A, int n, int m) {
     }
 }
 
-void print_vector(double* A, int n) {
+void print_vector(double *A, int n) {
     printf("[");
     for (int i = 0; i < n; i++) {
         printf("%.2f\t", A[i]);

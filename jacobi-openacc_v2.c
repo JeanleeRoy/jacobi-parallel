@@ -1,10 +1,10 @@
-#include <stdio.h>
 #include <math.h>
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "lib/utils.h"
 
-// compile: nvc -acc -o jacobi_acc jacobi-openacc_v2.c 
+// compile: nvc -acc -o jacobi_acc jacobi-openacc_v2.c
 
 #define N 100
 #define MAX_ITER 500
@@ -14,10 +14,10 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
     int k = 0;
     double error = tolerance + 1.0;
 
-    double *new_x = (double*)malloc(size * sizeof(double));
+    double *new_x = (double *)malloc(size * sizeof(double));
 
     // Allocate and copy A, b, x and allocate new_x on the GPU
-    #pragma acc data copyin(A[0:size*size], b[0:size], x[0:size]) create(new_x[0:size])
+    #pragma acc data copyin(A[0 : size * size], b[0 : size], x[0 : size]) create(new_x[0 : size])
     {
         while (k < maxIter && error > tolerance) {
             #pragma acc parallel loop
@@ -48,10 +48,9 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
             }
 
             // copy x to the device
-            #pragma acc update device(x[0:size])
-            
+            #pragma acc update device(x[0 : size])
+
             k++;
-            
         }
     }
 
@@ -68,7 +67,7 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
 }
 
 int main(int argc, char **argv) {
-    int size = N; // Size of the system of equations
+    int size = N;  // Size of the system of equations
 
     if (argv[1] != NULL) {
         size = atoi(argv[1]);
@@ -76,10 +75,10 @@ int main(int argc, char **argv) {
 
     struct timespec start, end;
 
-    double  *A,  // diagonal matrix of coefficients 
-            *b,  // right vector
-            *x;  // initial guess
-    
+    double *A,  // diagonal matrix of coefficients
+        *b,     // right vector
+        *x;     // initial guess
+
     A = (double *)malloc(size * size * sizeof(double));
     b = (double *)malloc(size * sizeof(double));
     x = (double *)calloc(size, size * sizeof(double));

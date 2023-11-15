@@ -1,7 +1,8 @@
-#include <stdio.h>
 #include <math.h>
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
+
 #include "lib/utils.h"
 
 // Compile: nvcc -o jacobi_cuda jacobi.cu
@@ -10,7 +11,7 @@
 #define TOL 1.0e-5
 #define MAX_ITER 2000
 
-__global__ void jacobi_kernel(double *d_A, double *d_b, double *d_x, double *d_new_x, int* d_size) {
+__global__ void jacobi_kernel(double *d_A, double *d_b, double *d_x, double *d_new_x, int *d_size) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int size = *d_size;
 
@@ -25,20 +26,20 @@ __global__ void jacobi_kernel(double *d_A, double *d_b, double *d_x, double *d_n
     }
 }
 
-void jacobi(double *A, double *b, double *x, int size, int maxIter, double tolerance) { 
+void jacobi(double *A, double *b, double *x, int size, int maxIter, double tolerance) {
     int k = 0;
     double error = tolerance + 1.0;
 
     int *d_size;
     double *d_A, *d_b, *d_x, *d_new_x;
-    double *h_new_x = (double*)calloc(size, size * sizeof(double));
+    double *h_new_x = (double *)calloc(size, size * sizeof(double));
 
     // Allocate memory on the device
-    cudaMalloc((void**)&d_A, size * size * sizeof(double));
-    cudaMalloc((void**)&d_b, size * sizeof(double));
-    cudaMalloc((void**)&d_x, size * sizeof(double));
-    cudaMalloc((void**)&d_new_x, size * sizeof(double));
-    cudaMalloc((void**)&d_size, sizeof(int));
+    cudaMalloc((void **)&d_A, size * size * sizeof(double));
+    cudaMalloc((void **)&d_b, size * sizeof(double));
+    cudaMalloc((void **)&d_x, size * sizeof(double));
+    cudaMalloc((void **)&d_new_x, size * sizeof(double));
+    cudaMalloc((void **)&d_size, sizeof(int));
 
     // Copy data from host to device
     cudaMemcpy(d_A, A, size * size * sizeof(double), cudaMemcpyHostToDevice);
@@ -59,9 +60,8 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
             fprintf(stderr, "Kernel launch failed: %s\n", cudaGetErrorString(err));
             break;
         }
-        
-        cudaMemcpy(h_new_x, d_new_x, size * sizeof(double), cudaMemcpyDeviceToHost);
 
+        cudaMemcpy(h_new_x, d_new_x, size * sizeof(double), cudaMemcpyDeviceToHost);
 
         error = 0.0;
         for (int i = 0; i < size; i++) {
@@ -97,15 +97,15 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
 }
 
 int main(int argc, char **argv) {
-    int size = N; // Size of the system of equations
+    int size = N;  // Size of the system of equations
 
     if (argv[1] != NULL) {
         size = atoi(argv[1]);
     }
 
-    double  *A,  // matrix of coefficients 
-            *b,  // right vector
-            *x;  // initial guess
+    double *A,  // matrix of coefficients
+        *b,     // right vector
+        *x;     // initial guess
 
     A = (double *)malloc(size * size * sizeof(double));
     b = (double *)malloc(size * sizeof(double));
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
     jacobi(A, b, x, size, MAX_ITER, TOL);
-    
+
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
 
     double delta_ms = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_nsec - start.tv_nsec) / 1000000;
