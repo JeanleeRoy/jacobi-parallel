@@ -67,26 +67,22 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
 }
 
 int main(int argc, char **argv) {
-    int size = N;  // Size of the system of equations
-
-    if (argv[1] != NULL) {
-        size = atoi(argv[1]);
-    }
-
-    struct timespec start, end;
+    int size;  // Size of the system of equations
 
     double *A,  // diagonal matrix of coefficients
         *b,     // right vector
         *x;     // initial guess
 
-    A = (double *)malloc(size * size * sizeof(double));
-    b = (double *)malloc(size * sizeof(double));
-    x = (double *)calloc(size, size * sizeof(double));
+    Data data = init_data(argc, argv, N);
 
-    generate_diagonal_dominant_matrix(A, size, 0, 1200);
-    generate_vector(b, size, 10, 200);
+    size = data.size;
+    A = data.A;
+    b = data.b;
+    x = data.x;
 
-    // print_matrix(A, size, size);
+    print_header("Jacobi method");
+
+    struct timespec start, end;
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 

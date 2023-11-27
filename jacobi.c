@@ -57,24 +57,22 @@ void jacobi(double *A, double *b, double *x, int size, double tolerance, int max
 }
 
 int main(int argc, char **argv) {
-    int size = N;  // Size of the system of equations
-
-    if (argv[1] != NULL) {
-        size = atoi(argv[1]);
-    }
+    int size;  // Size of the system of equations
 
     double *A,  // diagonal matrix of coefficients
         *b,     // right vector
-        *x;     // Initial guess
+        *x;     // initial guess
 
-    A = (double *)malloc(size * size * sizeof(double));
-    b = (double *)malloc(size * sizeof(double));
-    x = (double *)malloc(size * sizeof(double));
+    Data data = init_data(argc, argv, N);
+
+    size = data.size;
+    A = data.A;
+    b = data.b;
+    x = data.x;
+
+    print_header("Jacobi method");
 
     struct timespec start, end;
-
-    generate_diagonal_dominant_matrix(A, size, 0, 1200);
-    generate_vector(b, size, 10, 200);
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
@@ -90,7 +88,7 @@ int main(int argc, char **argv) {
     //     printf("x[%d] = %.6f\n", i, x[i]);
     // }
 
-    printf("Time elapsed = %g ms\n", delta_ms);
+    printf("Time elapsed = %g ms\n\n", delta_ms);
 
     free(A);
     free(b);
