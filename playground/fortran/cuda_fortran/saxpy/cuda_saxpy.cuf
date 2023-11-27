@@ -1,0 +1,41 @@
+module cuda_saxpy
+  use cudafor
+
+  implicit none
+
+  contains
+
+  attributes(global) subroutine saxpy_kernel(x, y, a)
+    implicit none
+
+    real, device :: x(:), y(:)
+    real, value :: a
+    integer :: i, n
+
+    n = size(x)
+    i = blockDim%x * (blockIdx%x - 1) + threadIdx%x
+    
+    if (i <= n) y(i) = y(i) + a*x(i)
+  end subroutine saxpy_kernel
+
+  subroutine cusaxpy(a, x, y, n)
+    implicit none
+
+    real, intent(in) :: x(:), a
+    real, intent(inout) :: y(:)
+    integer, intent(in) :: n
+
+    real, device :: x_d(n), y_d(n)
+    integer :: grid, tBlock
+
+    tBlock = 256
+    grid = (n-1)/tBlock+1
+
+    x_d = x
+    y_d = y
+  
+    call saxpy_kernel<<<grid, tBlock>>>(x_d, y_d, a)
+  
+    y = y_d
+    end subroutine cusaxpy
+end module cuda_saxpy
