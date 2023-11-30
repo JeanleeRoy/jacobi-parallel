@@ -10,4 +10,7 @@ profiling
 *.out
 *.mod
 
+jacobi_f90
+reshape.f90
+
 .vscode
