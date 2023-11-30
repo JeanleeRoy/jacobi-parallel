@@ -82,13 +82,15 @@ int main(int argc, char **argv) {
 
     double delta_ms = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_nsec - start.tv_nsec) / 1000000;
 
+    printf("Time elapsed = %g ms\n\n", delta_ms);
+    
     // Print the solution
-    // printf("Solution:\n");
+    // printf("Solution [x]:\n");
+    // print_vector_inline(x, size);
     // for (int i = 0; i < size; i++) {
     //     printf("x[%d] = %.6f\n", i, x[i]);
     // }
 
-    printf("Time elapsed = %g ms\n\n", delta_ms);
 
     free(A);
     free(b);

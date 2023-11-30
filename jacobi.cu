@@ -22,7 +22,12 @@ __global__ void jacobi_kernel(double *d_A, double *d_b, double *d_x, double *d_n
                 d_new_x[i] -= d_A[i * size + j] * d_x[j];
             }
         }
-        d_new_x[i] /= d_A[i * size + i];
+
+        if (d_A[i * size + i] != 0) {
+            d_new_x[i] /= d_A[i * size + i];
+        } else {
+            d_new_x[i] = 0;
+        }
     }
 }
 
@@ -48,7 +53,7 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
     cudaMemcpy(d_size, &size, sizeof(int), cudaMemcpyHostToDevice);
 
     // Kernel GPU dimensions
-    int block_size = 512;
+    int block_size = 1024;
     int num_blocks = (size + block_size - 1) / block_size;
 
     while (k < maxIter && error > tolerance) {
@@ -120,7 +125,7 @@ int main(int argc, char **argv) {
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
 
-    double delta_ms = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_nsec - start.tv_nsec) / 1000000;
+    double delta_ms = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_nsec - start.tv_nsec) / 1000000.0;
 
     // Print the solution
     // printf("Solution:\n");

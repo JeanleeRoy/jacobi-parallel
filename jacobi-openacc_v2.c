@@ -64,6 +64,8 @@ void jacobi(double *A, double *b, double *x, int size, int maxIter, double toler
 
     // Deallocate the GPU memory
     #pragma acc exit data delete(A, b, x, new_x)
+
+    free(new_x);
 }
 
 int main(int argc, char **argv) {
@@ -90,7 +92,7 @@ int main(int argc, char **argv) {
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
 
-    double delta_ms = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_nsec - start.tv_nsec) / 1000000;
+    double delta_ms = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_nsec - start.tv_nsec) / 1000000.0;
 
     //  Print the solution
     // printf("Solution:\n");
