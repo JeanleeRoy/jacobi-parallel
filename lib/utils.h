@@ -1,6 +1,7 @@
 #ifndef GENERATE_MATRIX_H
 #define GENERATE_MATRIX_H
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -56,9 +57,25 @@ void print_matrix(double *A, int n, int m) {
     }
 }
 
-void print_array_inline(double *a, int n) {
+void print_array_inline(double *a, int n, int is_fortran) {
+    if (is_fortran) {
+        int size = (int)sqrt(n);
+        for (int j = 0; j < size; j++) {
+            for (int i = 0; i < size; i++) {
+                printf("%.6f\t", a[i * size + j]);
+            }
+        }
+    } else {
+        for (int i = 0; i < n; i++) {
+            printf("%.6f\t", a[i]);
+        }
+    }
+    printf("\n");
+}
+
+void print_vector_inline(double *v, int n) {
     for (int i = 0; i < n; i++) {
-        printf("%.2f\t", a[i]);
+        printf("%.6f\t", v[i]);
     }
     printf("\n");
 }
